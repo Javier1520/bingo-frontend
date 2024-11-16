@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { claimWin } from '../api';
+import { claimWin } from '../services/api';
 
 const Room: React.FC = () => {
   const navigate = useNavigate();

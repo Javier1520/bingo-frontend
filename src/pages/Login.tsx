@@ -1,19 +1,23 @@
-import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useNavigate } from "react-router-dom";
-import { login } from '../api';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authService } from '../services/AuthService';
+import { authState$ } from '../store/Observables';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const { login: setAuth } = useAuth();
+
+  useEffect(() => {
+    const subscription = authState$.subscribe(({ user }) => {
+      if (user) navigate('/home');
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleLogin = async () => {
     try {
-      const response = await login(username, password);
-      setAuth(username, response.data.auth_token);
-      navigate('/home');
+      await authService.login(username, password);
     } catch (error) {
       console.error('Login failed', error);
     }
