@@ -12,12 +12,6 @@ const App = () => {
       <Router>
         <Routes>
 
-          <Route path="/game" element={
-            <ProtectedRoute>
-
-            </ProtectedRoute>
-          } />
-
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
