@@ -15,6 +15,9 @@ export const login = (username: string, password: string) =>
 export const register = (username: string, password: string) =>
   apiClient.post('/auth/users/', { username, password });
 
+export const logout = () =>
+    apiClient.post('/auth/token/logout/', {}, { headers: { Authorization: `Token ${getToken()}` } });
+
 export const registerToGame = () =>
   apiClient.post('/register-to-game', {}, { headers: { Authorization: `Token ${getToken()}` } });
 
