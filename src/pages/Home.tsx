@@ -1,10 +1,8 @@
 
-import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { registerToGame } from '../api';
+import { registerToGame } from '../services/api';
 
 const Home = () => {
-  const { user } = useAuth();
   const navigate = useNavigate();
 
   const handleRegisterToGame = async () => {
@@ -19,7 +17,7 @@ const Home = () => {
 
   return (
     <div>
-      <h1>Welcome {user}</h1>
+      <h1>Welcome {localStorage.getItem('user')}</h1>
       <button onClick={handleRegisterToGame}>Register for Game</button>
     </div>
   );

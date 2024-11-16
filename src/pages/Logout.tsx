@@ -1,24 +1,21 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { logout as logoutAPI } from '../api';
+import { authService } from '../services/AuthService';
 
 const Logout = () => {
-  const { logout: logoutContext } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     const handleLogout = async () => {
       try {
-        await logoutAPI();
+        await authService.logout();
       } catch (error) {
-        console.error('Backend logout failed:', error);
-
+        console.error('Logout failed:', error);
       } finally {
-        logoutContext();
         navigate('/login');
       }
     };
+
     handleLogout();
   }, []);
 

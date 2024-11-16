@@ -1,12 +1,11 @@
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 
 type ProtectedRouteProps = {
   children: React.ReactNode;
 };
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { token } = useAuth();
+  const token = localStorage.getItem('token');
 
   if (!token) {
     // Redirect to login if not authenticated
