@@ -1,13 +1,12 @@
-
 import { useNavigate } from 'react-router-dom';
-import { registerToGame } from '../services/api';
+import { gameService } from '../services/GameService';
 
 const Home = () => {
   const navigate = useNavigate();
 
   const handleRegisterToGame = async () => {
     try {
-      await registerToGame();
+      await gameService.registerToGame();
       alert('Registered to game successfully!');
       navigate('/room')
     } catch (error) {

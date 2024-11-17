@@ -5,6 +5,8 @@ export interface AuthState {
 
   export interface GameState {
     bingoCard: number[][] | null;
-    latestBall: number | null;
+    latestBall: string | null;
     isRegistered: boolean;
+    gameFinished?: boolean;
+    winner?: string | null;
   }
