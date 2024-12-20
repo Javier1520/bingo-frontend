@@ -1,32 +1,48 @@
-import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { gameService } from '../services/GameService';
-import { gameState$ } from '../store/Observables';
-import BingoCard from '../components/BingoCard';
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { gameService } from "../services/GameService";
+import { gameState$ } from "../store/Observables";
+import BingoCard from "../components/BingoCard";
 
 export const Room = () => {
   const navigate = useNavigate();
   const [gameState, setGameState] = useState(gameState$.value);
+  const [ballCalls, setBallCalls] = useState<string[]>([]);
   const hasReceivedBalls = useRef(false);
+  const ballCallsRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
 
   useEffect(() => {
     const subscription = gameState$.subscribe((state) => {
       setGameState(state);
 
-      // If we receive a valid ball
       if (state.latestBall) {
         hasReceivedBalls.current = true;
-      }
-      // If we had balls before but now we don't, game is finished
-      else if (hasReceivedBalls.current) {
-        hasReceivedBalls.current = false; // Reset the flag
-        alert('Game finished!');
+        setBallCalls((prev) =>
+          state.latestBall ? [...prev, String(state.latestBall)] : prev
+        );
+
+        // Auto-scroll to the right after DOM updates
+        if (!isDragging.current && ballCallsRef.current) {
+          requestAnimationFrame(() => {
+            ballCallsRef.current?.scrollTo({
+              left: ballCallsRef.current.scrollWidth,
+              behavior: "smooth",
+            });
+          });
+        }
+      } else if (hasReceivedBalls.current) {
+        // Handle game finish
+        hasReceivedBalls.current = false;
+        alert("Game finished!");
         gameState$.next({
           bingoCard: null,
           latestBall: null,
-          isRegistered: false
+          isRegistered: false,
         });
-        navigate('/home');
+        navigate("/home");
       }
     });
 
@@ -38,49 +54,70 @@ export const Room = () => {
     };
   }, [navigate]);
 
-  const convertCardToObject = (
-    card: number[][] | { [key: string]: (number | null)[] } | null
-  ): { [key: string]: (number | null)[] } | null => {
-    if (!card) return null;
-
-    if (typeof card === 'object' && !Array.isArray(card)) {
-      return card as { [key: string]: (number | null)[] };
-    }
-
-    const columns = ['B', 'I', 'N', 'G', 'O'];
-    const cardObject: { [key: string]: (number | null)[] } = {};
-
-    (card as number[][]).forEach((column, index) => {
-      cardObject[columns[index]] = column;
-    });
-
-    return cardObject;
-  };
-
-  const bingoCard = convertCardToObject(gameState.bingoCard);
-
   const handleClaimWin = async () => {
     try {
       await gameService.claimWin();
-      alert('Congratulations, you won!');
+      alert("Congratulations, you won!");
     } catch (error: any) {
       if (error.response?.status === 400) {
-        alert('You are not registered in the game.');
+        alert("You are not registered in the game.");
       } else if (error.response?.status === 403) {
-        alert('You are disqualified.');
+        alert("You are disqualified.");
       } else {
-        alert('An unexpected error occurred.');
+        alert("An unexpected error occurred.");
       }
     } finally {
-      navigate('/home');
+      navigate("/home");
     }
+  };
+
+  // Mouse Down: Start Dragging
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (ballCallsRef.current) {
+      isDragging.current = true;
+      startX.current = e.pageX - ballCallsRef.current.offsetLeft;
+      scrollLeft.current = ballCallsRef.current.scrollLeft;
+    }
+  };
+
+  // Mouse Move: Drag
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging.current || !ballCallsRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - ballCallsRef.current.offsetLeft;
+    const walk = x - startX.current; // Distance dragged
+    ballCallsRef.current.scrollLeft = scrollLeft.current - walk;
+  };
+
+  // Mouse Up/Leave: Stop Dragging
+  const handleMouseUpOrLeave = () => {
+    isDragging.current = false;
   };
 
   return (
     <div>
       <h1>Bingo Game</h1>
-      {gameState.latestBall && <h2>Latest Ball: {gameState.latestBall}</h2>}
-      <BingoCard bingoCard={bingoCard} />
+      <div
+        ref={ballCallsRef}
+        style={{
+          maxWidth: "400px",
+          margin: "0 auto",
+          overflow: "hidden",
+          whiteSpace: "nowrap",
+          cursor: isDragging.current ? "grabbing" : "grab",
+          userSelect: "none",
+        }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUpOrLeave}
+        onMouseLeave={handleMouseUpOrLeave}
+      >
+
+        <h2 >
+          Ball Calls: {ballCalls.join(" ")}
+        </h2>
+      </div>
+      <BingoCard bingoCard={gameState.bingoCard} />
       <button onClick={handleClaimWin}>Claim Win</button>
     </div>
   );
