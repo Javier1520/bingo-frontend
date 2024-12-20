@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { authState$ } from '../store/Observables';
 
-const API_URL = 'johndoe54745.pythonanywhere.com/api';
+const API_URL = 'https://johndoe54745.pythonanywhere.com/api';
 
 
 export const api = axios.create({
