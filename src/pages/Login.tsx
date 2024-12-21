@@ -25,6 +25,7 @@ const Login = () => {
 
   return (
     <div>
+      <button onClick={() => navigate('/register')}>Sign up</button>
       <h1>Login</h1>
       <input
         type="text"

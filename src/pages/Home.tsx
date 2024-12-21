@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { gameService } from '../services/GameService';
+import LogoutButton  from '../components/LogoutButton';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -15,10 +16,14 @@ const Home = () => {
   };
 
   return (
+    <>
+    <LogoutButton/>
+
     <div>
       <h1>Welcome {localStorage.getItem('user')}</h1>
       <button onClick={handleRegisterToGame}>Register for Game</button>
     </div>
+    </>
   );
 };
 

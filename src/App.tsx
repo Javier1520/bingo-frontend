@@ -1,22 +1,17 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Route, Routes, BrowserRouter } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
-import Logout from './pages/Logout';
 import Room from './pages/Room';
 import ProtectedRoute from './components/ProtectedRoute';
 
-
-
 const App = () => {
   return (
-
-      <Router>
+      <BrowserRouter>
         <Routes>
 
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/logout" element={<Logout />} />
           <Route path="/register" element={<Register />} />
           <Route path="/room" element={<Room />} />
           <Route path="/home" element={
@@ -26,10 +21,8 @@ const App = () => {
             }
           />
         </Routes>
-      </Router>
-
+      </BrowserRouter>
   );
 };
 
 export default App;
-

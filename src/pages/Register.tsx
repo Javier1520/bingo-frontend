@@ -24,7 +24,8 @@ const Register = () => {
 
   return (
     <div>
-      <h1>Register</h1>
+      <button onClick={() => navigate('/login')}>Login</button>
+      <h1>Sign up</h1>
       {error && <div style={{ color: 'red' }}>{error}</div>}
       <input
         type="text"
@@ -38,7 +39,7 @@ const Register = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button onClick={handleRegister}>Register</button>
+      <button onClick={handleRegister}>Sign up</button>
     </div>
   );
 };
