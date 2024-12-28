@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { authState$ } from '../store/Observables';
 
-const API_URL = 'https://johndoe54745.pythonanywhere.com/api';
+const API_URL = 'http://127.0.0.1:8000/api';
 
 
 export const api = axios.create({
@@ -34,4 +34,18 @@ export const getBingoCard = () => api.get('/bingo-card');
 
 export const claimWin = () => api.post('/claim-win');
 
-export const getLatestBall = () => api.get('/latest-ball');
+// WebSocket connection method
+export const connectToGame = (gameId: string) => {
+  const socket = new WebSocket(`ws://127.0.0.1:8000/ws/game/${gameId}/`);
+
+  socket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    if (data.action === 'new_ball') {
+      console.log(`New ball drawn: ${data.message.letter}${data.message.ball}`);
+    } else if (data.action === 'win_claimed') {
+      console.log(`Win claimed: ${data.result}`);
+    }
+  };
+
+  return socket;
+};

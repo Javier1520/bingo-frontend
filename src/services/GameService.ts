@@ -1,11 +1,11 @@
 import { gameState$ } from '../store/Observables';
-import { api } from './api';
+import { api, registerToGame, getBingoCard, claimWin } from './api';
 
 class GameService {
     async registerToGame() {
       try {
-        await api.post('/register-to-game');
-        const cardResponse = await api.get('/bingo-card');
+        await registerToGame();
+        const cardResponse = await getBingoCard();
         gameState$.next({
           ...gameState$.value,
           bingoCard: cardResponse.data.card,
@@ -21,7 +21,7 @@ class GameService {
 
     async claimWin() {
       try {
-        await api.post('/claim-win');
+        await claimWin();
         gameState$.next({
           bingoCard: null,
           latestBall: null,
