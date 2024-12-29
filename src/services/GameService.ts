@@ -1,5 +1,5 @@
 import { gameState$ } from '../store/Observables';
-import { api, registerToGame, getBingoCard, claimWin } from './api';
+import { registerToGame, getBingoCard, claimWin, connectToGame } from './api';
 
 class GameService {
     async registerToGame() {
@@ -35,19 +35,8 @@ class GameService {
       }
     }
 
-    startBallPolling() {
-        return setInterval(async () => {
-          try {
-            const response = await api.get('/latest-ball');
-
-            gameState$.next({
-              ...gameState$.value,
-              latestBall: response.data.latest_ball || null
-            });
-          } catch (error) {
-            console.error('Failed to get latest ball:', error);
-          }
-        }, 5002);
+    async startBallPolling() {
+        connectToGame();
       }
   }
 

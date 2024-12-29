@@ -46,11 +46,10 @@ export const Room = () => {
       }
     });
 
-    const pollingInterval = gameService.startBallPolling();
+    gameService.startBallPolling();
 
     return () => {
       subscription.unsubscribe();
-      clearInterval(pollingInterval);
     };
   }, [navigate]);
 

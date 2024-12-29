@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { authState$ } from '../store/Observables';
+import { authState$, gameState$ } from '../store/Observables';
 
 const API_URL = 'http://127.0.0.1:8000/api';
 
@@ -35,16 +35,37 @@ export const getBingoCard = () => api.get('/bingo-card');
 export const claimWin = () => api.post('/claim-win');
 
 // WebSocket connection method
-export const connectToGame = (gameId: string) => {
-  const socket = new WebSocket(`ws://127.0.0.1:8000/ws/game/${gameId}/`);
+export const connectToGame = () => {
+  const token = authState$.value?.token;
+  if (!token) {
+    console.error('No token available, cannot connect to WebSocket');
+    return;
+  }
+
+  // Use a fixed URL since there is only one game session
+  const socket = new WebSocket(`ws://127.0.0.1:8000/ws/game/?token=${token}`);
+
+  socket.onopen = () => {
+    console.log("WebSocket connected");
+  };
 
   socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    if (data.action === 'new_ball') {
-      console.log(`New ball drawn: ${data.message.letter}${data.message.ball}`);
-    } else if (data.action === 'win_claimed') {
-      console.log(`Win claimed: ${data.result}`);
+    if (data.type === 'game.ball') {
+      console.log(`New ball drawn: ${data.message.ball}`);
+      gameState$.next({
+        ...gameState$.value,
+        latestBall: data.message.ball
+      });
     }
+  };
+
+  socket.onerror = (error) => {
+    console.error("WebSocket error:", error);
+  };
+
+  socket.onclose = () => {
+    console.log("WebSocket disconnected");
   };
 
   return socket;
