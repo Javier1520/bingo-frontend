@@ -8,7 +8,6 @@ export const Room = () => {
   const navigate = useNavigate();
   const [gameState, setGameState] = useState(gameState$.value);
   const [ballCalls, setBallCalls] = useState<string[]>([]);
-  const hasReceivedBalls = useRef(false);
   const ballCallsRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
@@ -19,7 +18,6 @@ export const Room = () => {
       setGameState(state);
 
       if (state.latestBall) {
-        hasReceivedBalls.current = true;
         setBallCalls((prev) =>
           state.latestBall ? [...prev, String(state.latestBall)] : prev
         );
@@ -33,15 +31,13 @@ export const Room = () => {
             });
           });
         }
-      } else if (hasReceivedBalls.current) {
-        // Handle game finish
-        hasReceivedBalls.current = false;
+      } else if (state.gameFinished) {
         alert("Game finished!");
         gameState$.next({
-          bingoCard: null,
-          latestBall: null,
-          isRegistered: false,
+          ...state,
+          gameFinished: false,
         });
+        console.log(state.isRegistered, '\nisRegistered\n');
         navigate("/home");
       }
     });
@@ -62,6 +58,10 @@ export const Room = () => {
         alert("You are not registered in the game.");
       } else if (error.response?.status === 403) {
         alert("You are disqualified.");
+        gameState$.next({
+          ...gameState,
+          latestBall: null,
+        });
       } else {
         alert("An unexpected error occurred.");
       }

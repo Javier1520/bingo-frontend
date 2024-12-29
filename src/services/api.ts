@@ -57,6 +57,14 @@ export const connectToGame = () => {
         ...gameState$.value,
         latestBall: data.message.ball
       });
+    } else if (data.type === 'game.finish') {
+      console.log('Game finished');
+      gameState$.next({
+        bingoCard: null,
+        latestBall: null,
+        isRegistered: false,
+        gameFinished: true,
+      });
     }
   };
 
