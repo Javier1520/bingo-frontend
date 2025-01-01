@@ -43,7 +43,7 @@ export const connectToGame = () => {
   }
 
   // Use a fixed URL since there is only one game session
-  const socket = new WebSocket(`ws://bingo-backend-6epn.onrender.com/ws/game/?token=${token}`);
+  const socket = new WebSocket(`wss://bingo-backend-6epn.onrender.com/ws/game/?token=${token}`);
 
   socket.onopen = () => {
     console.log("WebSocket connected");
