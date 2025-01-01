@@ -6,6 +6,7 @@ import { authState$ } from '../store/Observables';
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,10 +17,18 @@ const Login = () => {
   }, []);
 
   const handleLogin = async () => {
+    if (loading) return;
+
+    setLoading(true);
+    const timeoutId = setTimeout(() => setLoading(false), 5000); // Fallback to reset loading after 5 seconds
+
     try {
       await authService.login(username, password);
+      clearTimeout(timeoutId); // Clear timeout if the request completes successfully
     } catch (error) {
       console.error('Login failed', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -39,7 +48,17 @@ const Login = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button onClick={handleLogin}>Login</button>
+      <button
+        onClick={handleLogin}
+        disabled={loading}
+        style={{
+          backgroundColor: loading ? '#374151' : '',
+          cursor: loading ? 'not-allowed' : 'pointer',
+          transition: 'background-color 0.3s ease',
+        }}
+      >
+        {loading ? 'Logging in...' : 'Login'}
+      </button>
     </div>
   );
 };
