@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { authState$, gameState$ } from '../store/Observables';
 
-const API_URL = 'http://127.0.0.1:8000/api';
+const API_URL = 'https://bingo-backend-6epn.onrender.com/api';
 
 
 export const api = axios.create({
