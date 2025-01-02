@@ -1,18 +1,18 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/AuthService';
-import { authState$ } from '../store/Observables';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { authService } from "../services/AuthService";
+import { authState$ } from "../store/Observables";
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const subscription = authState$.subscribe(({ user }) => {
-      if (user) navigate('/home');
+      if (user) navigate("/home");
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -21,14 +21,11 @@ const Login = () => {
     if (loading) return;
 
     setLoading(true);
-    const timeoutId = setTimeout(() => setLoading(false), 5000); // Fallback to reset loading after 5 seconds
 
     try {
       await authService.login(username, password);
-      clearTimeout(timeoutId); // Clear timeout if the request completes successfully
     } catch (error) {
-      console.error('Login failed', error);
-      setError('Login failed. Please try again.');
+      setError("Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -36,9 +33,9 @@ const Login = () => {
 
   return (
     <div>
-      <button onClick={() => navigate('/register')}>Sign up</button>
+      <button onClick={() => navigate("/register")}>Sign up</button>
       <h1>Login</h1>
-      {error && <div style={{ color: 'red' }}>{error}</div>}
+      {error && <div style={{ color: "red" }}>{error}</div>}
       <input
         type="text"
         placeholder="Username"
@@ -55,12 +52,12 @@ const Login = () => {
         onClick={handleLogin}
         disabled={loading}
         style={{
-          backgroundColor: loading ? '#374151' : '',
-          cursor: loading ? 'not-allowed' : 'pointer',
-          transition: 'background-color 0.3s ease',
+          backgroundColor: loading ? "#374151" : "",
+          cursor: loading ? "not-allowed" : "pointer",
+          transition: "background-color 0.3s ease",
         }}
       >
-        {loading ? 'Logging in...' : 'Login'}
+        {loading ? "Logging in..." : "Login"}
       </button>
     </div>
   );

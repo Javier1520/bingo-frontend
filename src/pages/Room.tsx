@@ -52,9 +52,7 @@ export const Room = () => {
 
   const handleClaimWin = async () => {
     if (loading) return;
-
     setLoading(true);
-    //const timeoutId = setTimeout(() => setLoading(false), 5000);
 
     try {
       await gameService.claimWin();
