@@ -14,7 +14,8 @@ export interface BingoCardInterface {
 export interface GameState {
   bingoCard: BingoCardInterface | null;
   latestBall: string | null;
+  totalPlayers: number;
   isRegistered: boolean;
-  gameFinished?: boolean;
+  gameFinished: boolean;
   winner?: string | null;
 }

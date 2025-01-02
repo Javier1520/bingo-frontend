@@ -25,6 +25,7 @@ class GameService {
         gameState$.next({
           bingoCard: null,
           latestBall: null,
+          totalPlayers: 0,
           isRegistered: false,
           gameFinished: false,
           winner: null

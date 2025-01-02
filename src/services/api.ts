@@ -62,6 +62,7 @@ export const connectToGame = () => {
       gameState$.next({
         bingoCard: null,
         latestBall: null,
+        totalPlayers: 0,
         isRegistered: false,
         gameFinished: true,
       });

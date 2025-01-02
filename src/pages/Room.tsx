@@ -19,7 +19,7 @@ export const Room = () => {
 
       if (state.latestBall) {
         setBallCalls((prev) =>
-          state.latestBall ? [...prev, String(state.latestBall)] : prev
+          state.latestBall ? [...prev, state.latestBall] : prev
         );
 
         // Auto-scroll to the right after DOM updates
