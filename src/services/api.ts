@@ -62,9 +62,16 @@ export const connectToGame = () => {
       gameState$.next({
         bingoCard: null,
         latestBall: null,
+        totalPlayers: 0,
         isRegistered: false,
         gameFinished: true,
       });
+    } else if (data.type === 'game.total_players') {
+      gameState$.next({
+        ...gameState$.value,
+        totalPlayers: data.message.total_players
+      })
+      console.log(`Total players in game: ${data.message.total_players}`);
     }
   };
 

@@ -9,6 +9,7 @@ export const authState$ = new BehaviorSubject<AuthState>({
 export const gameState$ = new BehaviorSubject<GameState>({
   bingoCard: null,
   latestBall: null,
+  totalPlayers: 0,
   isRegistered: false,
   gameFinished: false,
   winner: null
