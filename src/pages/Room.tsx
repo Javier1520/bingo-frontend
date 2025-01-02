@@ -8,6 +8,7 @@ export const Room = () => {
   const navigate = useNavigate();
   const [gameState, setGameState] = useState(gameState$.value);
   const [ballCalls, setBallCalls] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
   const ballCallsRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
@@ -37,7 +38,7 @@ export const Room = () => {
           ...state,
           gameFinished: false,
         });
-        console.log(state.isRegistered, '\nisRegistered\n');
+        console.log(state.isRegistered, "\nisRegistered\n");
         navigate("/home");
       }
     });
@@ -50,6 +51,11 @@ export const Room = () => {
   }, [navigate]);
 
   const handleClaimWin = async () => {
+    if (loading) return;
+
+    setLoading(true);
+    //const timeoutId = setTimeout(() => setLoading(false), 5000);
+
     try {
       await gameService.claimWin();
       alert("Congratulations, you won!");
@@ -110,12 +116,22 @@ export const Room = () => {
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUpOrLeave}
-        onMouseLeave={handleMouseUpOrLeave}      >
-
+        onMouseLeave={handleMouseUpOrLeave}
+      >
         <h2>Ball Calls: {ballCalls.join(" ")}</h2>
       </div>
       <BingoCard bingoCard={gameState.bingoCard} />
-      <button onClick={handleClaimWin}>Claim Win</button>
+      <button
+        onClick={handleClaimWin}
+        disabled={loading}
+        style={{
+          backgroundColor: loading ? "#374151" : "",
+          cursor: loading ? "not-allowed" : "pointer",
+          transition: "background-color 0.3s ease",
+        }}
+      >
+        {loading ? "Claiming Win..." : "Claim Win"}
+      </button>
     </div>
   );
 };
