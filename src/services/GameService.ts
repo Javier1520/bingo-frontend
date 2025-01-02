@@ -10,6 +10,7 @@ class GameService {
           ...gameState$.value,
           bingoCard: cardResponse.data.card,
           isRegistered: true,
+          latestBall: null,
           gameFinished: false,
           winner: null
         });

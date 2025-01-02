@@ -96,6 +96,7 @@ export const Room = () => {
   return (
     <div>
       <h1>Bingo Game</h1>
+      <h2>Total Players: {gameState.totalPlayers}</h2>
       <div
         ref={ballCallsRef}
         style={{
@@ -109,12 +110,9 @@ export const Room = () => {
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUpOrLeave}
-        onMouseLeave={handleMouseUpOrLeave}
-      >
+        onMouseLeave={handleMouseUpOrLeave}      >
 
-        <h2 >
-          Ball Calls: {ballCalls.join(" ")}
-        </h2>
+        <h2>Ball Calls: {ballCalls.join(" ")}</h2>
       </div>
       <BingoCard bingoCard={gameState.bingoCard} />
       <button onClick={handleClaimWin}>Claim Win</button>
