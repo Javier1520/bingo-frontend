@@ -6,6 +6,7 @@ import { authState$ } from '../store/Observables';
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -27,6 +28,7 @@ const Login = () => {
       clearTimeout(timeoutId); // Clear timeout if the request completes successfully
     } catch (error) {
       console.error('Login failed', error);
+      setError('Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -36,6 +38,7 @@ const Login = () => {
     <div>
       <button onClick={() => navigate('/register')}>Sign up</button>
       <h1>Login</h1>
+      {error && <div style={{ color: 'red' }}>{error}</div>}
       <input
         type="text"
         placeholder="Username"
