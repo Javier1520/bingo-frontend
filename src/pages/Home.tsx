@@ -36,7 +36,7 @@ const Home = () => {
             transition: "background-color 0.3s ease",
           }}
         >
-          {loading ? "Loading..." : "Register for Game"}
+          {loading ? "Registering..." : "Register to play"}
         </button>
       </div>
     </>
