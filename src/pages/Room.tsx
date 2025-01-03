@@ -10,10 +10,11 @@ export const Room = () => {
   const [ballCalls, setBallCalls] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(30);
+  const [waitingCountdown, setWaitingCountdown] = useState<number>(60);
   const ballCallsRef = useRef<HTMLDivElement>(null);
-  const isDragging = useRef(false);
-  const startX = useRef(0);
-  const scrollLeft = useRef(0);
+  const isDragging = useRef<boolean>(false);
+  const startX = useRef<number>(0);
+  const scrollLeft = useRef<number>(0);
 
   useEffect(() => {
     const subscription = gameState$.subscribe((state) => {
@@ -21,7 +22,9 @@ export const Room = () => {
 
       if (state.latestBall) {
         setBallCalls((prev) =>
-          state.latestBall ? [...prev, state.latestBall] : prev
+          prev[prev.length - 1] !== (state.latestBall as string)
+            ? [...prev, state.latestBall as string]
+            : prev
         );
 
         // Auto-scroll to the right after DOM updates
@@ -99,19 +102,26 @@ export const Room = () => {
   };
 
   useEffect(() => {
+    if (gameState.totalPlayers === 1 && waitingCountdown > 0) {
+      const timer = setTimeout(
+        () => setWaitingCountdown(waitingCountdown - 1),
+        1000
+      );
+      return () => clearTimeout(timer);
+    }
     if (gameState.totalPlayers >= 2 && countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
       return () => clearTimeout(timer);
     }
-  }, [gameState.totalPlayers, countdown]);
+  }, [gameState.totalPlayers, waitingCountdown, countdown]);
 
   return (
     <div>
       {!gameState.latestBall ? (
         gameState.totalPlayers >= 2 ? (
-          <h2>Game starts in: {countdown} seconds</h2>
+          <h2>Game starts in: {countdown}</h2>
         ) : (
-          <h2>Min of 2 players required</h2>
+          <h2>Min of 2 players required: {waitingCountdown}</h2>
         )
       ) : (
         <h2>Bingo Game</h2>
