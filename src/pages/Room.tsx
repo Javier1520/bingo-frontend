@@ -8,7 +8,8 @@ export const Room = () => {
   const navigate = useNavigate();
   const [gameState, setGameState] = useState(gameState$.value);
   const [ballCalls, setBallCalls] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [countdown, setCountdown] = useState<number>(30);
   const ballCallsRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
@@ -97,13 +98,29 @@ export const Room = () => {
     isDragging.current = false;
   };
 
+  useEffect(() => {
+    if (gameState.totalPlayers >= 2 && countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [gameState.totalPlayers, countdown]);
+
   return (
     <div>
-      <h1>Bingo Game</h1>
+      {!gameState.latestBall ? (
+        gameState.totalPlayers >= 2 ? (
+          <h2>Game starts in: {countdown} seconds</h2>
+        ) : (
+          <h2>Min of 2 players required</h2>
+        )
+      ) : (
+        <h2>Bingo Game</h2>
+      )}
       <h2>Total Players: {gameState.totalPlayers}</h2>
       <div
         ref={ballCallsRef}
         style={{
+          width: "400px",
           maxWidth: "400px",
           margin: "0 auto",
           overflow: "hidden",
@@ -123,6 +140,7 @@ export const Room = () => {
         onClick={handleClaimWin}
         disabled={loading}
         style={{
+          marginTop: "1rem",
           backgroundColor: loading ? "#374151" : "",
           cursor: loading ? "not-allowed" : "pointer",
           transition: "background-color 0.3s ease",
