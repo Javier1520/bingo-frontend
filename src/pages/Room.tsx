@@ -8,6 +8,8 @@ export const Room = () => {
   const navigate = useNavigate();
   const [gameState, setGameState] = useState(gameState$.value);
   const [ballCalls, setBallCalls] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [countdown, setCountdown] = useState<number>(30);
   const ballCallsRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const startX = useRef(0);
@@ -37,7 +39,7 @@ export const Room = () => {
           ...state,
           gameFinished: false,
         });
-        console.log(state.isRegistered, '\nisRegistered\n');
+        console.log(state.isRegistered, "\nisRegistered\n");
         navigate("/home");
       }
     });
@@ -50,6 +52,9 @@ export const Room = () => {
   }, [navigate]);
 
   const handleClaimWin = async () => {
+    if (loading) return;
+    setLoading(true);
+
     try {
       await gameService.claimWin();
       alert("Congratulations, you won!");
@@ -93,13 +98,29 @@ export const Room = () => {
     isDragging.current = false;
   };
 
+  useEffect(() => {
+    if (gameState.totalPlayers >= 2 && countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [gameState.totalPlayers, countdown]);
+
   return (
     <div>
-      <h1>Bingo Game</h1>
+      {!gameState.latestBall ? (
+        gameState.totalPlayers >= 2 ? (
+          <h2>Game starts in: {countdown} seconds</h2>
+        ) : (
+          <h2>Min of 2 players required</h2>
+        )
+      ) : (
+        <h2>Bingo Game</h2>
+      )}
       <h2>Total Players: {gameState.totalPlayers}</h2>
       <div
         ref={ballCallsRef}
         style={{
+          width: "400px",
           maxWidth: "400px",
           margin: "0 auto",
           overflow: "hidden",
@@ -110,12 +131,23 @@ export const Room = () => {
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUpOrLeave}
-        onMouseLeave={handleMouseUpOrLeave}      >
-
+        onMouseLeave={handleMouseUpOrLeave}
+      >
         <h2>Ball Calls: {ballCalls.join(" ")}</h2>
       </div>
       <BingoCard bingoCard={gameState.bingoCard} />
-      <button onClick={handleClaimWin}>Claim Win</button>
+      <button
+        onClick={handleClaimWin}
+        disabled={loading}
+        style={{
+          marginTop: "1rem",
+          backgroundColor: loading ? "#374151" : "",
+          cursor: loading ? "not-allowed" : "pointer",
+          transition: "background-color 0.3s ease",
+        }}
+      >
+        {loading ? "Claiming Win..." : "Claim Win"}
+      </button>
     </div>
   );
 };
